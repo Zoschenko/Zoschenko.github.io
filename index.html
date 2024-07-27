@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Зощенко. Репетиции.</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+        }
+        .story {
+            margin-bottom: 15px;
+        }
+        .actors {
+            display: block;
+            margin-bottom: 20px;
+        }
+        .actor {
+            margin-bottom: 5px;
+        }
+        .story.incomplete {
+            text-decoration: line-through;
+        }
+        label {
+            display: flex;
+            align-items: center;
+        }
+        input[type="checkbox"] {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Присутствие на репетиции:</h2>
+    <div id="actors-list" class="actors"></div>
+    <h2>Рассказы:</h2>
+    <div id="stories-list"></div>
+
+    <script>
+        const actors = ["Аня Б", "Аня М", "Артём", "Вика", "Вова", "Дима", "Женя", "Инна", "Коля", "Лиза", "Марина", "Маша", "Олеся", "Полина П", "Полина Ш", "Саша", "Федя"];
+        const stories = [
+            { title: "Гости", actors: ["Артём", "Вика"] },
+            { title: "Аристократка", actors: ["Коля", "Артём", "Олеся"] },
+            { title: "Свадьба", actors: ["Федя", "Инна"] },
+            { title: "Не надо иметь родственников", actors: ["Федя", "Женя"] },
+            { title: "Галоша", actors: ["Саша", "Марина", "Маша"] },
+            { title: "Брак по расчету", actors: ["Дима", "Инна", "Коля", "Олеся"] },
+            { title: "Бабье счастье", actors: ["Маша", "Дима", "Вика", "Марина", "Артём", "Женя"] },
+            { title: "Не надо спекулировать", actors: ["Женя", "Инна", "Полина П"] },
+            { title: "Стакан", actors: ["Дима", "Марина", "Федя"] },
+            { title: "История болезни", actors: ["Коля", "Артём", "Олеся", "Лиза"] },
+            { title: "Весёленькая история", actors: ["Лиза", "Вова", "Марина"] },
+            { title: "Валя", actors: ["Аня Б", "Федя", "Аня М"] },
+            { title: "Операция", actors: ["Лиза", "Федя"] },
+            { title: "Бедность", actors: ["Дима", "Полина Ш"] },
+            { title: "Нервные люди", actors: ["Саша", "Аня Б"] },
+            { title: "Как жена не дала мужу умереть", actors: ["Дима", "Полина П"] },
+            { title: "Неизвестный друг", actors: ["Аня Б", "Вова"] },
+            { title: "Фотокарточка", actors: ["Маша", "Инна", "Федя", "Дима"] },
+            { title: "Любовь", actors: ["Вова", "Полина Ш"] },
+        ];
+
+        function createActorCheckboxes() {
+            const actorsListDiv = document.getElementById('actors-list');
+            actors.forEach(actor => {
+                const label = document.createElement('label');
+                label.classList.add('actor');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = actor;
+                checkbox.value = actor;
+                checkbox.checked = actor !== "Женя";
+                checkbox.onchange = updateStories;
+
+                label.appendChild(checkbox);
+                label.appendChild(document.createTextNode(actor));
+                actorsListDiv.appendChild(label);
+            });
+        }
+
+        function createStoryList() {
+            const storiesListDiv = document.getElementById('stories-list');
+            stories.forEach(story => {
+                const sortedActors = story.actors.slice().sort();
+                const storyDiv = document.createElement('div');
+                storyDiv.classList.add('story');
+                storyDiv.dataset.actors = sortedActors.join(',');
+                storyDiv.innerHTML = `<strong>${story.title}</strong>: ${sortedActors.join(', ')}`;
+                storiesListDiv.appendChild(storyDiv);
+            });
+            updateStories();
+        }
+
+        function updateStories() {
+            const checkboxes = document.querySelectorAll('#actors-list input[type="checkbox"]');
+            const selectedActors = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+
+            document.querySelectorAll('.story').forEach(storyDiv => {
+                const storyActors = storyDiv.dataset.actors.split(',');
+                if (storyActors.every(actor => selectedActors.includes(actor))) {
+                    storyDiv.classList.remove('incomplete');
+                } else {
+                    storyDiv.classList.add('incomplete');
+                }
+            });
+        }
+
+        createActorCheckboxes();
+        createStoryList();
+    </script>
+</body>
+</html>
