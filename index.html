@@ -32,6 +32,10 @@
         input[type="checkbox"] {
             margin-right: 8px;
         }
+        #stats {
+            margin-top: 20px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -39,6 +43,7 @@
     <div id="actors-list" class="actors"></div>
     <h2>Рассказы:</h2>
     <div id="stories-list"></div>
+    <div id="stats"></div>
 
     <script>
         const actors = ["Аня Б", "Аня М", "Артём", "Вика", "Вова", "Дима", "Женя", "Инна", "Коля", "Лиза", "Марина", "Маша", "Олеся", "Полина П", "Полина Ш", "Саша", "Федя"];
@@ -58,9 +63,9 @@
             { title: "Операция", actors: ["Лиза", "Федя"] },
             { title: "Бедность", actors: ["Дима", "Полина Ш"] },
             { title: "Нервные люди", actors: ["Саша", "Аня Б"] },
-            { title: "Как жена не дала мужу умереть", actors: ["Дима", "Полина П"] },
+            { title: "Как жена не дала мужу умереть", actors: ["Дима", "Полина П", "Артём"] },
             { title: "Неизвестный друг", actors: ["Аня Б", "Вова"] },
-            { title: "Фотокарточка", actors: ["Маша", "Саша", "Федя", "Дима"] },
+            { title: "Фотокарточка", actors: ["Маша", "Аня М", "Федя", "Дима"] },
             { title: "Любовь", actors: ["Вова", "Полина Ш"] },
         ];
 
@@ -84,12 +89,12 @@
 
         function createStoryList() {
             const storiesListDiv = document.getElementById('stories-list');
-            stories.forEach(story => {
+            stories.forEach((story, index) => {
                 const sortedActors = story.actors.slice().sort();
                 const storyDiv = document.createElement('div');
                 storyDiv.classList.add('story');
                 storyDiv.dataset.actors = sortedActors.join(',');
-                storyDiv.innerHTML = `<strong>${story.title}</strong>: ${sortedActors.join(', ')}`;
+                storyDiv.innerHTML = `<strong>${index + 1}. ${story.title}</strong>: ${sortedActors.join(', ')}`;
                 storiesListDiv.appendChild(storyDiv);
             });
             updateStories();
@@ -99,14 +104,19 @@
             const checkboxes = document.querySelectorAll('#actors-list input[type="checkbox"]');
             const selectedActors = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
 
+            let completeCount = 0;
             document.querySelectorAll('.story').forEach(storyDiv => {
                 const storyActors = storyDiv.dataset.actors.split(',');
                 if (storyActors.every(actor => selectedActors.includes(actor))) {
                     storyDiv.classList.remove('incomplete');
+                    completeCount++;
                 } else {
                     storyDiv.classList.add('incomplete');
                 }
             });
+
+            const statsDiv = document.getElementById('stats');
+            statsDiv.textContent = `Можно отрепетировать: ${completeCount} из ${stories.length} рассказов`;
         }
 
         createActorCheckboxes();
