@@ -46,16 +46,15 @@
     <div id="stats"></div>
 
     <script>
-        const actors = ["Аня Б", "Аня М", "Артём", "Вика", "Вова", "Дима", "Женя", "Инна", "Коля", "Лиза", "Марина", "Маша", "Олеся", "Полина П", "Полина Ш", "Саша", "Федя"];
+        const actors = ["Аня Б", "Аня М", "Артём", "Вика", "Вова", "Дима", "Инна", "Коля", "Лиза", "Марина", "Маша", "Олеся", "Полина П", "Полина Ш", "Саша", "Федя"];
         const stories = [
             { title: "Гости", actors: ["Артём", "Вика"] },
             { title: "Аристократка", actors: ["Коля", "Артём", "Олеся"] },
             { title: "Свадьба", actors: ["Федя", "Инна"] },
-            { title: "Не надо иметь родственников", actors: ["Федя", "Женя"] },
-            { title: "Галоша", actors: ["Саша", "Марина", "Маша"] },
+            { title: "Галоша", actors: ["Полина П", "Марина", "Маша"] },
             { title: "Брак по расчету", actors: ["Дима", "Инна", "Коля", "Олеся"] },
-            { title: "Бабье счастье", actors: ["Маша", "Дима", "Вика", "Марина", "Артём", "Женя"] },
-            { title: "Не надо спекулировать", actors: ["Женя", "Инна", "Полина П"] },
+            { title: "Бабье счастье", actors: ["Маша", "Дима", "Вика", "Марина", "Артём", "Федя"] },
+            { title: "Не надо спекулировать", actors: ["Федя", "Инна", "Полина П"] },
             { title: "Стакан", actors: ["Дима", "Марина", "Федя"] },
             { title: "История болезни", actors: ["Коля", "Артём", "Олеся", "Лиза"] },
             { title: "Весёленькая история", actors: ["Лиза", "Вова", "Марина"] },
@@ -69,7 +68,20 @@
             { title: "Любовь", actors: ["Вова", "Полина Ш"] },
         ];
 
-        function createActorCheckboxes() {
+        function countStoriesForActors(stories, actors) {
+            const actorCounts = {};
+            actors.forEach(actor => actorCounts[actor] = 0);
+            stories.forEach(story => {
+                story.actors.forEach(actor => {
+                    if (actor in actorCounts) {
+                        actorCounts[actor]++;
+                    }
+                });
+            });
+            return actorCounts;
+        }
+
+        function createActorCheckboxes(actorCounts) {
             const actorsListDiv = document.getElementById('actors-list');
             actors.forEach(actor => {
                 const label = document.createElement('label');
@@ -78,11 +90,11 @@
                 checkbox.type = 'checkbox';
                 checkbox.name = actor;
                 checkbox.value = actor;
-                checkbox.checked = actor !== "Женя";
+                checkbox.checked = true;
                 checkbox.onchange = updateStories;
 
                 label.appendChild(checkbox);
-                label.appendChild(document.createTextNode(actor));
+                label.appendChild(document.createTextNode(`${actor} (${actorCounts[actor]})`));
                 actorsListDiv.appendChild(label);
             });
         }
@@ -119,7 +131,8 @@
             statsDiv.textContent = `Можно отрепетировать: ${completeCount} из ${stories.length} рассказов`;
         }
 
-        createActorCheckboxes();
+        const actorCounts = countStoriesForActors(stories, actors);
+        createActorCheckboxes(actorCounts);
         createStoryList();
     </script>
 </body>
